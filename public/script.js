@@ -370,21 +370,24 @@ async function sendMessage() {
   
   try {
     const savedKey = localStorage.getItem('smith_api_key') || ''
-    const savedModel = localStorage.getItem('smith_api_model') || 'deepseek/deepseek-v4-flash:free'
+    const savedModel = localStorage.getItem('smith_api_model') || 'gemini-2.5-pro'
+    const savedProvider = localStorage.getItem('smith_api_provider') || 'gemini'
     
     const data = await api.post('/api/chat', {
       message: text,
       apiKey: savedKey,
       model: savedModel,
+      provider: savedProvider,
     })
     
     // Typing indicator'ı kaldır
     typingEl.remove()
     
     if (data && data.response) {
+      const sourceLabel = data.source === 'gemini' ? '🌟 Gemini 2.5 Pro' : data.source === 'openrouter' ? '🔄 OpenRouter' : '💭 Smith Beyin'
       messages.innerHTML += `
         <div class="chat-message smith">
-          <div class="chat-label">SMITH (${data.source === 'openrouter' ? '🧠 AI' : '💭 Beyin'})</div>
+          <div class="chat-label">SMITH (${sourceLabel})</div>
           <div class="chat-bubble">${escapeHtml(data.response)}</div>
         </div>
       `
@@ -471,39 +474,58 @@ async function proposeEvolution() {
 
 async function loadSettings(container) {
   const savedKey = localStorage.getItem('smith_api_key') || ''
-  const savedModel = localStorage.getItem('smith_api_model') || 'deepseek/deepseek-v4-flash:free'
+  const savedModel = localStorage.getItem('smith_api_model') || 'gemini-2.5-pro'
+  const savedProvider = localStorage.getItem('smith_api_provider') || 'gemini'
   
   container.innerHTML = `
     <div class="page-header">
       <h2>⚙️ AYARLAR</h2>
-      <p>Smith'in yapılandırması</p>
+      <p>Smith'in yapılandırması - Gemini ile sınırsız zeka! 🧠</p>
     </div>
     
-    <div class="card">
-      <div class="card-title">🔑 OpenRouter API</div>
-      <p style="font-size:12px;color:#080;margin-bottom:16px;line-height:1.6">
-        OpenRouter, birçok AI modeline tek API ile erişmeni sağlar.
-        <a href="https://openrouter.ai/keys" target="_blank" style="color:#0f0">Buradan</a> ücretsiz anahtar alabilirsin.
-        Anahtar olmadan da Smith'in kendi beyniyle sohbet edebilirsin!
+    <div class="card" style="border-color: rgba(0,255,0,0.4)">
+      <div class="card-title">🧠 AI SAĞLAYICI</div>
+      <p style="font-size:12px;color:#0f0;margin-bottom:16px;line-height:1.6">
+        <b>⭐ Google Gemini</b> — Sınırsız ücretsiz, 1M token context, çok zeki! (Varsayılan)
+        <br>
+        <b>🔄 OpenRouter</b> — Yedek sağlayıcı (DeepSeek, GPT, Claude vb.)
       </p>
       
       <div class="settings-group">
-        <label for="apiKey">API Anahtarı</label>
-        <input type="password" id="apiKey" value="${savedKey}" placeholder="sk-or-v1-...">
-        <div class="hint">Anahtar tarayıcına kaydedilir, sunucuya gönderilmez</div>
+        <label for="apiProvider">Sağlayıcı</label>
+        <select id="apiProvider" onchange="toggleProviderSettings()">
+          <option value="gemini" ${savedProvider === 'gemini' ? 'selected' : ''}>⭐ Google Gemini (Önerilen - Sınırsız Ücretsiz)</option>
+          <option value="openrouter" ${savedProvider === 'openrouter' ? 'selected' : ''}>🔄 OpenRouter (Yedek)</option>
+        </select>
       </div>
       
-      <div class="settings-group">
-        <label for="apiModel">Model</label>
-        <select id="apiModel">
-          <option value="deepseek/deepseek-v4-flash:free" ${savedModel === 'deepseek/deepseek-v4-flash:free' ? 'selected' : ''}>DeepSeek V4 Flash Free ⭐ (Önerilen)</option>
-          <option value="deepseek/deepseek-v4-flash" ${savedModel === 'deepseek/deepseek-v4-flash' ? 'selected' : ''}>DeepSeek V4 Flash (Ücretli)</option>
-          <option value="openai/gpt-4o-mini" ${savedModel === 'openai/gpt-4o-mini' ? 'selected' : ''}>GPT-4o Mini</option>
-          <option value="openai/gpt-4o" ${savedModel === 'openai/gpt-4o' ? 'selected' : ''}>GPT-4o</option>
-          <option value="anthropic/claude-3.5-sonnet" ${savedModel === 'anthropic/claude-3.5-sonnet' ? 'selected' : ''}>Claude 3.5 Sonnet</option>
-          <option value="google/gemini-2.0-flash-001" ${savedModel === 'google/gemini-2.0-flash-001' ? 'selected' : ''}>Gemini 2.0 Flash</option>
-          <option value="meta-llama/llama-3.3-70b-instruct" ${savedModel === 'meta-llama/llama-3.3-70b-instruct' ? 'selected' : ''}>Llama 3.3 70B</option>
-        </select>
+      <div id="geminiSettings" style="display:${savedProvider === 'gemini' ? 'block' : 'none'}">
+        <div class="settings-group">
+          <label for="apiModel">Gemini Modeli</label>
+          <select id="apiModel">
+            <option value="gemini-2.5-pro" ${savedModel === 'gemini-2.5-pro' ? 'selected' : ''}>Gemini 2.5 Pro ⭐ (En Zeki, Önerilen)</option>
+            <option value="gemini-2.5-flash" ${savedModel === 'gemini-2.5-flash' ? 'selected' : ''}>Gemini 2.5 Flash (Hızlı)</option>
+          </select>
+          <div class="hint">⭐ Gemini 2.5 Pro = GPT-4o seviyesinde, ücretsiz, sınırsız!</div>
+        </div>
+        <p style="font-size:11px;color:#0f0">✅ Gemini API anahtarı sunucuda kayıtlı, ekstra bir şey yapmana gerek yok!</p>
+      </div>
+      
+      <div id="openrouterSettings" style="display:${savedProvider === 'openrouter' ? 'block' : 'none'}">
+        <div class="settings-group">
+          <label for="apiKey">OpenRouter API Anahtarı</label>
+          <input type="password" id="apiKey" value="${savedKey}" placeholder="sk-or-v1-...">
+          <div class="hint"><a href="https://openrouter.ai/keys" target="_blank" style="color:#0f0">OpenRouter'dan</a> ücretsiz anahtar alabilirsin</div>
+        </div>
+        <div class="settings-group">
+          <label for="apiModel2">OpenRouter Modeli</label>
+          <select id="apiModel2">
+            <option value="deepseek/deepseek-v4-flash:free" ${savedModel === 'deepseek/deepseek-v4-flash:free' ? 'selected' : ''}>DeepSeek V4 Flash Free</option>
+            <option value="deepseek/deepseek-v4-flash" ${savedModel === 'deepseek/deepseek-v4-flash' ? 'selected' : ''}>DeepSeek V4 Flash</option>
+            <option value="openai/gpt-4o-mini" ${savedModel === 'openai/gpt-4o-mini' ? 'selected' : ''}>GPT-4o Mini</option>
+            <option value="meta-llama/llama-3.3-70b-instruct" ${savedModel === 'meta-llama/llama-3.3-70b-instruct' ? 'selected' : ''}>Llama 3.3 70B</option>
+          </select>
+        </div>
       </div>
       
       <button class="save-btn" onclick="saveSettings()">💾 Kaydet</button>
@@ -538,15 +560,30 @@ async function loadSettings(container) {
   }
 }
 
+function toggleProviderSettings() {
+  const provider = document.getElementById('apiProvider').value
+  document.getElementById('geminiSettings').style.display = provider === 'gemini' ? 'block' : 'none'
+  document.getElementById('openrouterSettings').style.display = provider === 'openrouter' ? 'block' : 'none'
+}
+
 function saveSettings() {
-  const key = document.getElementById('apiKey').value
-  const model = document.getElementById('apiModel').value
+  const provider = document.getElementById('apiProvider').value
+  const key = document.getElementById('apiKey') ? document.getElementById('apiKey').value : ''
   
+  let model
+  if (provider === 'gemini') {
+    model = document.getElementById('apiModel').value
+  } else {
+    model = document.getElementById('apiModel2').value
+  }
+  
+  localStorage.setItem('smith_api_provider', provider)
   localStorage.setItem('smith_api_key', key)
   localStorage.setItem('smith_api_model', model)
   
   const msg = document.getElementById('settingsSaveMsg')
   msg.style.display = 'inline'
+  msg.textContent = provider === 'gemini' ? '✓ Gemini aktif! Süper zeki!' : '✓ Kaydedildi!'
   setTimeout(() => { msg.style.display = 'none' }, 2000)
 }
 
