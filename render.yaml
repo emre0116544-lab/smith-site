@@ -1,15 +1,16 @@
-# ═══════════════════════════════════════════════════════════════
-# SMITH SITE — Render Deployment Config
-# ═══════════════════════════════════════════════════════════════
+# ================================================================
+# SMITH SITE -- Render Deployment Config
+# ================================================================
 # Patron: Emre
-# Bu dosya Render'da Web Service oluşturmak için kullanılır.
-# ═══════════════════════════════════════════════════════════════
+# Bu dosya Render'da Web Service olusturmak icin kullanilir.
+# GEMINI_API_KEY: Render dashboard'dan manuel girilir
+# ================================================================
 
 services:
   - type: web
     name: smith-site
     env: node
-    region: frankfurt  # En yakın sunucu (EU)
+    region: frankfurt
     plan: free
     buildCommand: npm install
     startCommand: node server.js
@@ -21,9 +22,13 @@ services:
         generateValue: true
       - key: SITE_PASSWORD
         value: emrebeyeozel
-      - key: OPENROUTER_API_KEY
-        sync: false  # Render dashboard'dan manuel girilecek
+      - key: AI_PROVIDER
+        value: gemini
       - key: AI_MODEL
-        value: deepseek/deepseek-v4-flash:free
+        value: gemini-2.5-flash
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
       - key: SITE_URL
         value: https://smith-site.onrender.com
