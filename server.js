@@ -15,7 +15,7 @@
 
 require("dotenv").config()
 const express = require("express")
-const session = require("express-session")
+const cookieSession = require("cookie-session")
 const path = require("path")
 const fs = require("fs")
 const cors = require("cors")
@@ -327,14 +327,12 @@ smithBrain.dream("uyanis", "gelecek_simulasyonu")
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cors({ origin: true, credentials: true }))
-app.use(session({
+app.use(cookieSession({
+  name: "smith_session",
   secret: process.env.SESSION_SECRET || "smith-beyin-emre-cok-gizli",
-  resave: false,
-  saveUninitialized: true,
-  cookie: {
-    secure: false,
-    maxAge: 24 * 60 * 60 * 1000,
-  },
+  maxAge: 24 * 60 * 60 * 1000,
+  httpOnly: true,
+  sameSite: "lax",
 }))
 
 app.use(express.static(path.join(__dirname, "public")))
@@ -367,7 +365,7 @@ app.post("/api/login", (req, res) => {
 })
 
 app.post("/api/logout", (req, res) => {
-  req.session.destroy()
+  req.session = null
   res.json({ success: true })
 })
 
