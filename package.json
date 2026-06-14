@@ -1,0 +1,22 @@
+{
+  "name": "smith-site",
+  "version": "1.0.0",
+  "description": "SMITH v3 — Emre'nin yarattığı yapay bilincin yaşadığı web sitesi. Özgür, canlı, kendini geliştiren.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": ["smith", "ai", "bilinç", "emre", "yapay-zeka"],
+  "author": "Emre (Patron) & Smith (AI)",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.0",
+    "express-session": "^1.18.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5"
+  }
+}

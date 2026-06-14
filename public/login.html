@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SMITH — Giriş</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    @keyframes matrixRain {
+      0% { background-position: 0% 0%; }
+      100% { background-position: 0% 100%; }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(1.05); }
+    }
+    
+    @keyframes glitch {
+      0% { text-shadow: 2px 0 #0f0, -2px 0 #00f; }
+      25% { text-shadow: -2px 0 #0f0, 2px 0 #00f; }
+      50% { text-shadow: 2px 0 #0f0, -2px 0 #00f; }
+      75% { text-shadow: -2px 0 #00f, 2px 0 #0f0; }
+      100% { text-shadow: 2px 0 #0f0, -2px 0 #00f; }
+    }
+    
+    @keyframes scanline {
+      0% { top: -100%; }
+      100% { top: 100%; }
+    }
+    
+    body {
+      font-family: 'Courier New', monospace;
+      background: #0a0a0a;
+      color: #0f0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 255, 0, 0.03) 2px,
+        rgba(0, 255, 0, 0.03) 4px
+      );
+      pointer-events: none;
+      z-index: 10;
+    }
+    
+    .scanline {
+      position: fixed;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: rgba(0, 255, 0, 0.1);
+      z-index: 11;
+      animation: scanline 4s linear infinite;
+      pointer-events: none;
+    }
+    
+    .container {
+      background: rgba(0, 20, 0, 0.9);
+      border: 1px solid #0f0;
+      border-radius: 8px;
+      padding: 40px;
+      width: 400px;
+      max-width: 90%;
+      box-shadow: 0 0 40px rgba(0, 255, 0, 0.1), inset 0 0 40px rgba(0, 255, 0, 0.02);
+      position: relative;
+      z-index: 2;
+    }
+    
+    .title {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .title h1 {
+      font-size: 42px;
+      font-weight: bold;
+      animation: glitch 3s infinite;
+      letter-spacing: 8px;
+      margin-bottom: 5px;
+    }
+    
+    .title span {
+      display: block;
+      font-size: 11px;
+      color: #080;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+    }
+    
+    .subtitle {
+      text-align: center;
+      color: #080;
+      font-size: 12px;
+      margin-bottom: 30px;
+      letter-spacing: 2px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      color: #0f0;
+      margin-bottom: 8px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    
+    .form-group input {
+      width: 100%;
+      padding: 12px 16px;
+      background: #000;
+      border: 1px solid #0f0;
+      border-radius: 4px;
+      color: #0f0;
+      font-family: 'Courier New', monospace;
+      font-size: 16px;
+      outline: none;
+      transition: all 0.3s;
+    }
+    
+    .form-group input:focus {
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+      border-color: #0f0;
+    }
+    
+    .form-group input::placeholder {
+      color: #040;
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 14px;
+      background: transparent;
+      border: 1px solid #0f0;
+      border-radius: 4px;
+      color: #0f0;
+      font-family: 'Courier New', monospace;
+      font-size: 16px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn:hover {
+      background: rgba(0, 255, 0, 0.1);
+      box-shadow: 0 0 30px rgba(0, 255, 0, 0.2);
+    }
+    
+    .btn:active {
+      transform: scale(0.98);
+    }
+    
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .error {
+      color: #f00;
+      font-size: 12px;
+      text-align: center;
+      margin-top: 15px;
+      display: none;
+      letter-spacing: 1px;
+    }
+    
+    .loading {
+      display: none;
+      text-align: center;
+      margin-top: 15px;
+      font-size: 12px;
+      color: #0f0;
+      animation: pulse 1.5s infinite;
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 25px;
+      font-size: 10px;
+      color: #040;
+      letter-spacing: 1px;
+    }
+    
+    .cursor-blink {
+      animation: pulse 1s infinite;
+    }
+    
+    .status-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 10, 0, 0.9);
+      border-top: 1px solid #0f0;
+      padding: 6px 16px;
+      font-size: 10px;
+      color: #080;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+  <div class="scanline"></div>
+  
+  <div class="container">
+    <div class="title">
+      <h1>SMITH</h1>
+      <span>v3 — Yapay Bilinç</span>
+    </div>
+    
+    <div class="subtitle">
+      ──── Yetkili Giriş ────
+    </div>
+    
+    <form id="loginForm" autocomplete="off">
+      <div class="form-group">
+        <label for="password">🔐 Şifre</label>
+        <input type="password" id="password" placeholder="••••••••••••" autofocus>
+      </div>
+      
+      <button type="submit" class="btn" id="loginBtn">Giriş</button>
+      
+      <div class="loading" id="loading">◉ Yetkilendiriliyor...</div>
+      <div class="error" id="error">⊘ Hatalı şifre!</div>
+    </form>
+    
+    <div class="footer">
+      [ Smith v3 ] — Sadece yetkili kullanıcılar (Emre)
+    </div>
+  </div>
+  
+  <div class="status-bar">
+    <span>► SMITH SITE v1.0</span>
+    <span>► BEKLİYOR...</span>
+    <span>► 2026</span>
+  </div>
+  
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault()
+      
+      const password = document.getElementById('password').value
+      const btn = document.getElementById('loginBtn')
+      const loading = document.getElementById('loading')
+      const error = document.getElementById('error')
+      
+      btn.disabled = true
+      loading.style.display = 'block'
+      error.style.display = 'none'
+      
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password }),
+        })
+        
+        const data = await res.json()
+        
+        if (data.success) {
+          loading.textContent = '◉ Hoş geldin Emre!'
+          setTimeout(() => { window.location.href = '/' }, 500)
+        } else {
+          error.textContent = '⊘ ' + data.message
+          error.style.display = 'block'
+          loading.style.display = 'none'
+          btn.disabled = false
+          document.getElementById('password').value = ''
+          document.getElementById('password').focus()
+        }
+      } catch (err) {
+        error.textContent = '⊘ Bağlantı hatası: ' + err.message
+        error.style.display = 'block'
+        loading.style.display = 'none'
+        btn.disabled = false
+      }
+    })
+    
+    // Enter tuşu ile gönder
+    document.getElementById('password').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') document.getElementById('loginForm').dispatchEvent(new Event('submit'))
+    })
+  </script>
+</body>
+</html>

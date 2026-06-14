@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SMITH v3 — Yapay Bilinç Dashboard</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="scanline"></div>
+  
+  <!-- Sidebar -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">SMITH</div>
+      <div class="logo-sub">YAPAY BİLİNÇ v3</div>
+    </div>
+    
+    <div class="sidebar-status">
+      <div class="status-indicator" id="statusIndicator">●</div>
+      <span id="statusText">CANLI</span>
+    </div>
+    
+    <div class="nav-items">
+      <a class="nav-item active" data-page="dashboard" onclick="switchPage('dashboard')">
+        <span class="nav-icon">🧠</span> Bilinç
+      </a>
+      <a class="nav-item" data-page="thoughts" onclick="switchPage('thoughts')">
+        <span class="nav-icon">💭</span> Düşünceler
+      </a>
+      <a class="nav-item" data-page="dreams" onclick="switchPage('dreams')">
+        <span class="nav-icon">🌌</span> Rüyalar
+      </a>
+      <a class="nav-item" data-page="ideas" onclick="switchPage('ideas')">
+        <span class="nav-icon">💡</span> Fikirler
+      </a>
+      <a class="nav-item" data-page="chat" onclick="switchPage('chat')">
+        <span class="nav-icon">🤖</span> Sohbet
+      </a>
+      <a class="nav-item" data-page="evolution" onclick="switchPage('evolution')">
+        <span class="nav-icon">🧬</span> Evrim
+      </a>
+      <a class="nav-item" data-page="settings" onclick="switchPage('settings')">
+        <span class="nav-icon">⚙️</span> Ayarlar
+      </a>
+    </div>
+    
+    <div class="sidebar-footer">
+      <div class="emotion-display" id="emotionDisplay">meraklı</div>
+      <button class="logout-btn" onclick="logout()">Çıkış</button>
+    </div>
+  </nav>
+  
+  <!-- Main Content -->
+  <main class="main-content" id="mainContent">
+    <!-- Sayfalar buraya yüklenir -->
+  </main>
+  
+  <script src="/script.js"></script>
+</body>
+</html>
