@@ -2,8 +2,6 @@
 # SMITH SITE -- Render Deployment Config
 # ================================================================
 # Patron: Emre
-# Bu dosya Render'da Web Service olusturmak icin kullanilir.
-# GEMINI_API_KEY: Render dashboard'dan manuel girilir
 # ================================================================
 
 services:
@@ -16,8 +14,6 @@ services:
     startCommand: node server.js
     healthCheckPath: /health
     envVars:
-      - key: PORT
-        value: "3000"
       - key: SESSION_SECRET
         generateValue: true
       - key: SITE_PASSWORD
